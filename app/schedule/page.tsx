@@ -7,15 +7,17 @@ export default async function SchedulePage() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-bold">2026 Schedule</h2>
-        <p className="text-sm text-white/55">Tap any game for details</p>
+        <h2 className="text-2xl font-bold tracking-tight">Schedule</h2>
+        <p className="mt-0.5 text-sm text-white/45">2026 · tap a game for details</p>
       </div>
       {games.length === 0 ? (
-        <p className="text-white/70">No games found.</p>
+        <p className="glass rounded-2xl p-4 text-sm text-white/55">No games found.</p>
       ) : (
-        games.map((game) => (
-          <GameCard key={game.id} game={game} tv={mediaForGame(media, game)} />
-        ))
+        <div className="space-y-3">
+          {games.map((game) => (
+            <GameCard key={game.id} game={game} tv={mediaForGame(media, game)} />
+          ))}
+        </div>
       )}
     </div>
   );
