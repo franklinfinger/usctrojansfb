@@ -23,17 +23,19 @@ export default async function PlayerPage({
   );
 
   return (
-    <div className="space-y-5">
-      <Link href="/roster" className="text-sm text-gold">
+    <div className="page-shell space-y-6">
+      <Link href="/roster" className="text-sm font-semibold text-cardinal">
         ← Roster
       </Link>
 
-      <section className="rounded-2xl bg-cardinal p-5">
-        <p className="text-sm text-gold">#{player.jersey ?? "—"} · {player.position ?? "—"}</p>
-        <h1 className="mt-1 text-3xl font-bold">
+      <section className="overflow-hidden rounded-xl bg-cardinal px-6 py-8 text-white shadow-lift">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-bright">
+          #{player.jersey ?? "—"} · {player.position ?? "—"}
+        </p>
+        <h1 className="mt-2 font-serif text-4xl md:text-5xl">
           {player.firstName} {player.lastName}
         </h1>
-        <p className="mt-2 text-white/85">
+        <p className="mt-3 text-white/85">
           {[classYear(player.year), formatHeight(player.height), player.weight ? `${player.weight} lbs` : null]
             .filter(Boolean)
             .join(" · ")}
@@ -47,22 +49,24 @@ export default async function PlayerPage({
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm uppercase tracking-wide text-white/60">2026 Stats</h2>
+        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-faint">
+          2026 Stats
+        </h2>
         {playerStats.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/55">
+          <p className="empty-state">
             Season stats will appear after games are played.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-white/10">
+          <div className="card overflow-hidden">
             {playerStats.map((s, i) => (
               <div
                 key={`${s.category}-${s.statType}-${i}`}
-                className="flex items-center justify-between border-b border-white/10 px-4 py-3 last:border-b-0"
+                className="flex items-center justify-between border-b border-ink/6 px-4 py-3 last:border-b-0"
               >
-                <span className="text-sm text-white/70">
+                <span className="text-sm text-ink-soft">
                   {s.category} · {s.statType}
                 </span>
-                <span className="font-semibold">{s.stat}</span>
+                <span className="font-semibold text-cardinal">{s.stat}</span>
               </div>
             ))}
           </div>
