@@ -23,30 +23,31 @@ const STORIES = [
 
 export default function NewsPage() {
   return (
-    <div className="space-y-5">
+    <div className="page-shell space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">News</h2>
-        <p className="text-sm text-white/55">Official USC Athletics · open in browser</p>
+        <p className="eyebrow">Briefing</p>
+        <h1 className="page-title">News</h1>
+        <p className="page-sub">Official USC Athletics · opens in a new tab</p>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/10">
+      <div className="card overflow-hidden">
         {STORIES.map((s) => (
           <a
             key={s.title}
             href={s.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="block border-b border-white/10 px-4 py-4 last:border-b-0 active:bg-white/5"
+            className="block border-b border-ink/6 px-5 py-4 last:border-b-0 hover:bg-cream"
           >
-            <p className="text-xs text-gold">{s.date}</p>
-            <p className="mt-1 font-medium leading-snug">{s.title}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cardinal">
+              {s.date}
+            </p>
+            <p className="mt-1 font-medium leading-snug text-ink">{s.title}</p>
           </a>
         ))}
       </div>
 
-      <p className="text-center text-xs text-white/40">
-        Full coverage at usctrojans.com
-      </p>
+      <p className="text-center text-xs text-ink-faint">Full coverage at usctrojans.com</p>
     </div>
   );
 }
