@@ -1,0 +1,9 @@
+{
+  "name": "Trojan Command Center",
+  "short_name": "USC FB",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0E0E0E",
+  "theme_color": "#990000",
+  "icons": []
+}
