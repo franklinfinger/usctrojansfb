@@ -1,37 +1,41 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Instrument_Serif, Source_Sans_3 } from "next/font/google";
 import BottomNav from "@/components/BottomNav";
 import Header from "@/components/Header";
 import "./globals.css";
 
-const inter = Inter({
+const display = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-geist",
+  weight: "400",
+  variable: "--font-display",
+  display: "swap",
+});
+
+const sans = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-sans",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Trojan Command Center",
-  description: "USC Trojans football command center",
+  description: "Everything Trojan football. One command center.",
   manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#070708",
+  themeColor: "#990000",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen bg-ink font-sans text-white antialiased">
-        <div className="pointer-events-none fixed inset-0 bg-hero-mesh" />
-        <div className="relative z-10 mx-auto flex min-h-screen max-w-lg flex-col">
-          <Header />
-          <main className="flex-1 px-4 pb-28 pt-4">{children}</main>
-          <BottomNav />
-        </div>
+    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+      <body className="min-h-screen bg-cream font-sans text-ink antialiased">
+        <Header />
+        <main className="pb-24 md:pb-10">{children}</main>
+        <BottomNav />
       </body>
     </html>
   );
