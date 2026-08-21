@@ -7,7 +7,6 @@ import { formatGameDate } from "@/lib/utils";
 export default function GameCard({
   game,
   tv,
-  compact = false,
 }: {
   game: Game;
   tv?: string | null;
@@ -22,44 +21,44 @@ export default function GameCard({
 
   return (
     <Link href={`/schedule/${game.id}`} className="block">
-      <article className="glass-strong relative overflow-hidden rounded-2xl bg-card-shine p-4 transition active:scale-[0.99]">
+      <article className="rounded-xl border border-ink/8 bg-cream-card p-4 shadow-sm transition hover:shadow-lift">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="chip-gold">Week {game.week}</span>
-              <span className="chip">{home ? "Home" : game.neutralSite ? "Neutral" : "Away"}</span>
-              {game.conferenceGame ? <span className="chip">Big Ten</span> : null}
-            </div>
-            <h3 className={`${compact ? "text-lg" : "text-xl"} mt-2.5 truncate font-semibold tracking-tight`}>
-              <span className="text-white/50">{home ? "vs" : "@"}</span> {opponent}
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cardinal">
+              Week {game.week} · {home ? "Home" : game.neutralSite ? "Neutral" : "Away"}
+              {game.conferenceGame ? " · Big Ten" : ""}
+            </p>
+            <h3 className="mt-1 font-serif text-2xl">
+              {home ? "vs" : "@"} {opponent}
             </h3>
-            <p className="mt-1 text-sm text-white/55">
+            <p className="mt-1 text-sm text-ink/55">
               {formatGameDate(game.startDate, game.startTimeTbd)}
             </p>
             {game.venue ? (
-              <p className="mt-1.5 flex items-center gap-1.5 text-xs text-white/40">
+              <p className="mt-1 flex items-center gap-1.5 text-xs text-ink/45">
                 <MapPin size={12} /> {game.venue}
               </p>
             ) : null}
             {tv ? (
-              <p className="mt-1.5 flex items-center gap-1.5 text-sm font-medium text-gold">
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-ink/70">
                 <Tv size={14} /> {tv}
               </p>
             ) : null}
           </div>
-
-          <div className="shrink-0 text-right">
+          <div className="text-right">
             {played ? (
-              <div>
-                <p className={`text-2xl font-bold tabular-nums ${won ? "text-gold" : "text-white"}`}>
+              <>
+                <p className={`text-2xl font-semibold tabular-nums ${won ? "text-cardinal" : "text-ink"}`}>
                   {uscScore}-{oppScore}
                 </p>
-                <p className={`mt-0.5 text-xs font-semibold ${won ? "text-gold" : "text-white/50"}`}>
-                  {won ? "WIN" : "LOSS"}
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">
+                  {won ? "Win" : "Loss"}
                 </p>
-              </div>
+              </>
             ) : (
-              <span className="chip">Upcoming</span>
+              <span className="rounded-full bg-cream-mute px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink/55">
+                Upcoming
+              </span>
             )}
           </div>
         </div>
