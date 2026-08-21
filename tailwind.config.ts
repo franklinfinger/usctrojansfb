@@ -11,17 +11,19 @@ const config: Config = {
           deep: "#6E0000",
         },
         gold: {
-          DEFAULT: "#FFC72C",
-          ink: "#C9A227",
+          DEFAULT: "#F0C14B",
+          bright: "#FFD76A",
+          ink: "#8A6A12",
         },
         cream: {
-          DEFAULT: "#F6F1E8",
-          card: "#FFFbf5",
-          mute: "#EDE6D9",
+          DEFAULT: "#F4EFE6",
+          card: "#FFFcf7",
+          mute: "#E8E0D2",
         },
         ink: {
           DEFAULT: "#1A1412",
-          soft: "#4A403A",
+          soft: "#5C524C",
+          faint: "#8A8178",
         },
       },
       fontFamily: {
@@ -29,7 +31,8 @@ const config: Config = {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        lift: "0 18px 50px rgba(26, 20, 18, 0.12)",
+        lift: "0 12px 40px rgba(26, 20, 18, 0.10)",
+        card: "0 1px 0 rgba(26,20,18,0.04), 0 8px 24px rgba(26,20,18,0.06)",
       },
     },
   },
