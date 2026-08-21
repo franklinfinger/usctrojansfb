@@ -40,25 +40,25 @@ export default function RosterList({ players }: { players: RosterPlayer[] }) {
   return (
     <div className="space-y-3">
       <div className="relative">
-        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-white/35" />
+        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink/35" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search name, number, hometown"
-          className="w-full rounded-2xl border border-white/10 bg-white/[0.04] py-3 pl-10 pr-4 text-sm outline-none placeholder:text-white/30 focus:border-gold/40"
+          className="w-full rounded-xl border border-ink/10 bg-cream-card py-3 pl-10 pr-4 text-sm outline-none placeholder:text-ink/30 focus:border-cardinal"
         />
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-2 overflow-x-auto pb-1">
         {GROUPS.map((g) => (
           <button
             key={g}
             type="button"
             onClick={() => setGroup(g)}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold ${
               group === g
-                ? "bg-cardinal text-white shadow-glow"
-                : "border border-white/10 bg-white/[0.04] text-white/60"
+                ? "bg-cardinal text-white"
+                : "border border-ink/10 bg-cream-card text-ink/55"
             }`}
           >
             {g}
@@ -66,31 +66,31 @@ export default function RosterList({ players }: { players: RosterPlayer[] }) {
         ))}
       </div>
 
-      <div className="glass-strong overflow-hidden rounded-2xl">
+      <div className="overflow-hidden rounded-xl border border-ink/8 bg-cream-card">
         {filtered.map((player) => (
           <Link
             key={`${player.id}-${player.jersey}`}
             href={`/roster/${player.id}`}
-            className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3.5 last:border-b-0 active:bg-white/[0.04]"
+            className="flex items-center justify-between border-b border-ink/6 px-4 py-3.5 last:border-b-0 hover:bg-cream"
           >
             <div className="min-w-0">
               <p className="truncate font-medium">
                 {player.firstName} {player.lastName}
               </p>
-              <p className="mt-0.5 truncate text-xs text-white/45">
+              <p className="mt-0.5 truncate text-xs text-ink/45">
                 {player.position ?? "—"}
                 {player.year ? ` · ${classYear(player.year)}` : ""}
                 {player.height ? ` · ${formatHeight(player.height)}` : ""}
                 {player.hometown ? ` · ${player.hometown}` : ""}
               </p>
             </div>
-            <span className="ml-3 text-lg font-bold tabular-nums text-gold">
+            <span className="ml-3 text-lg font-semibold tabular-nums text-cardinal">
               {player.jersey ?? ""}
             </span>
           </Link>
         ))}
         {filtered.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-white/40">No players match.</p>
+          <p className="px-4 py-8 text-center text-sm text-ink/40">No players match.</p>
         ) : null}
       </div>
     </div>
