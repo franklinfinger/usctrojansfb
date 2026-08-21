@@ -5,13 +5,13 @@ export default async function SchedulePage() {
   const [games, media] = await Promise.all([getGames(), getMedia()]);
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto max-w-3xl space-y-5 px-4 py-10 md:px-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Schedule</h2>
-        <p className="mt-0.5 text-sm text-white/45">2026 · tap a game for details</p>
+        <p className="eyebrow">2026 season</p>
+        <h2 className="mt-1 font-serif text-4xl">Schedule</h2>
       </div>
       {games.length === 0 ? (
-        <p className="glass rounded-2xl p-4 text-sm text-white/55">No games found.</p>
+        <p className="text-ink/55">No games found.</p>
       ) : (
         <div className="space-y-3">
           {games.map((game) => (
