@@ -5,10 +5,11 @@ export default async function RosterPage() {
   const roster = await getRoster();
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto max-w-3xl space-y-5 px-4 py-10 md:px-8">
       <div>
-        <h2 className="text-2xl font-bold">2026 Roster</h2>
-        <p className="text-sm text-white/55">{roster.length} players</p>
+        <p className="eyebrow">2026 team</p>
+        <h2 className="mt-1 font-serif text-4xl">Roster</h2>
+        <p className="mt-1 text-sm text-ink/50">{roster.length} players</p>
       </div>
       <RosterList players={roster} />
     </div>
