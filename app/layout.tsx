@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import BottomNav from "@/components/BottomNav";
 import Header from "@/components/Header";
 import "./globals.css";
 
-const geist = Geist({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-geist",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={geist.variable}>
+    <html lang="en" className={inter.variable}>
       <body className="min-h-screen bg-ink font-sans text-white antialiased">
         <div className="pointer-events-none fixed inset-0 bg-hero-mesh" />
         <div className="relative z-10 mx-auto flex min-h-screen max-w-lg flex-col">
