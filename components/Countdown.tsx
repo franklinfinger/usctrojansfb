@@ -12,7 +12,11 @@ export default function Countdown({ targetIso }: { targetIso: string }) {
   }, [targetIso]);
 
   if (parts.past) {
-    return <p className="text-sm text-gold">Kickoff time reached</p>;
+    return (
+      <p className="rounded-xl border border-gold/20 bg-gold/10 px-3 py-2 text-center text-sm font-medium text-gold">
+        Kickoff time reached
+      </p>
+    );
   }
 
   const cells = [
@@ -23,11 +27,16 @@ export default function Countdown({ targetIso }: { targetIso: string }) {
   ];
 
   return (
-    <div className="mt-3 grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-4 gap-2">
       {cells.map((c) => (
-        <div key={c.label} className="rounded-xl bg-black/30 px-2 py-2 text-center">
-          <div className="text-xl font-bold tabular-nums">{c.value}</div>
-          <div className="text-[10px] uppercase tracking-wide text-white/60">{c.label}</div>
+        <div
+          key={c.label}
+          className="rounded-xl border border-white/8 bg-gradient-to-b from-white/[0.07] to-white/[0.02] px-2 py-3 text-center shadow-card"
+        >
+          <div className="text-2xl font-bold tabular-nums tracking-tight">{c.value}</div>
+          <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">
+            {c.label}
+          </div>
         </div>
       ))}
     </div>
