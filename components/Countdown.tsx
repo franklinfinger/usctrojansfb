@@ -13,7 +13,7 @@ export default function Countdown({ targetIso }: { targetIso: string }) {
 
   if (parts.past) {
     return (
-      <p className="rounded-xl border border-gold/20 bg-gold/10 px-3 py-2 text-center text-sm font-medium text-gold">
+      <p className="rounded-lg bg-cardinal/10 px-3 py-2 text-center text-sm font-semibold text-cardinal">
         Kickoff time reached
       </p>
     );
@@ -31,10 +31,10 @@ export default function Countdown({ targetIso }: { targetIso: string }) {
       {cells.map((c) => (
         <div
           key={c.label}
-          className="rounded-xl border border-white/8 bg-gradient-to-b from-white/[0.07] to-white/[0.02] px-2 py-3 text-center shadow-card"
+          className="rounded-xl border border-ink/8 bg-cream px-2 py-3 text-center"
         >
-          <div className="text-2xl font-bold tabular-nums tracking-tight">{c.value}</div>
-          <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">
+          <div className="text-2xl font-semibold tabular-nums text-ink">{c.value}</div>
+          <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-faint">
             {c.label}
           </div>
         </div>
