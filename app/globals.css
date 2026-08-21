@@ -3,40 +3,25 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
 body {
-  background: #070708;
-  color: #f5f5f5;
+  background: #f6f1e8;
+  color: #1a1412;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
 }
 
 @layer components {
-  .glass {
-    @apply border border-white/10 bg-white/[0.04] backdrop-blur-xl;
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-cardinal;
   }
-  .glass-strong {
-    @apply border border-white/12 bg-ink-card/90 shadow-card backdrop-blur-xl;
+  .btn-gold {
+    @apply inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-sm font-semibold text-ink transition hover:bg-gold/90;
   }
-  .section-label {
-    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45;
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-md border border-white/30 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10;
   }
-  .chip {
-    @apply inline-flex items-center rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/80;
-  }
-  .chip-gold {
-    @apply inline-flex items-center rounded-full border border-gold/30 bg-gold/10 px-2.5 py-1 text-[11px] font-semibold text-gold;
-  }
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
 }
