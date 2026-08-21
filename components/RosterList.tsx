@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { RosterPlayer } from "@/lib/types";
 import { classYear, formatHeight } from "@/lib/utils";
@@ -38,20 +39,26 @@ export default function RosterList({ players }: { players: RosterPlayer[] }) {
 
   return (
     <div className="space-y-3">
-      <input
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="Search name, number, hometown"
-        className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm outline-none focus:border-gold"
-      />
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="relative">
+        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-white/35" />
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search name, number, hometown"
+          className="w-full rounded-2xl border border-white/10 bg-white/[0.04] py-3 pl-10 pr-4 text-sm outline-none placeholder:text-white/30 focus:border-gold/40"
+        />
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {GROUPS.map((g) => (
           <button
             key={g}
             type="button"
             onClick={() => setGroup(g)}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs ${
-              group === g ? "bg-cardinal text-white" : "bg-white/10 text-white/70"
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+              group === g
+                ? "bg-cardinal text-white shadow-glow"
+                : "border border-white/10 bg-white/[0.04] text-white/60"
             }`}
           >
             {g}
@@ -59,29 +66,31 @@ export default function RosterList({ players }: { players: RosterPlayer[] }) {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/10">
+      <div className="glass-strong overflow-hidden rounded-2xl">
         {filtered.map((player) => (
           <Link
             key={`${player.id}-${player.jersey}`}
             href={`/roster/${player.id}`}
-            className="flex items-center justify-between border-b border-white/10 px-4 py-3 last:border-b-0 active:bg-white/5"
+            className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3.5 last:border-b-0 active:bg-white/[0.04]"
           >
-            <div>
-              <p className="font-medium">
+            <div className="min-w-0">
+              <p className="truncate font-medium">
                 {player.firstName} {player.lastName}
               </p>
-              <p className="text-sm text-white/55">
+              <p className="mt-0.5 truncate text-xs text-white/45">
                 {player.position ?? "—"}
                 {player.year ? ` · ${classYear(player.year)}` : ""}
                 {player.height ? ` · ${formatHeight(player.height)}` : ""}
                 {player.hometown ? ` · ${player.hometown}` : ""}
               </p>
             </div>
-            <span className="text-lg font-semibold text-gold">{player.jersey ?? ""}</span>
+            <span className="ml-3 text-lg font-bold tabular-nums text-gold">
+              {player.jersey ?? ""}
+            </span>
           </Link>
         ))}
         {filtered.length === 0 ? (
-          <p className="px-4 py-6 text-center text-sm text-white/50">No players match.</p>
+          <p className="px-4 py-8 text-center text-sm text-white/40">No players match.</p>
         ) : null}
       </div>
     </div>
