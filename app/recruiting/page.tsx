@@ -7,45 +7,52 @@ export default async function RecruitingPage() {
     getRecruits(classYear).catch(() => []),
   ]);
 
-  // Also show current cycle if next class is empty
   const fallback =
     recruits.length === 0 ? await getRecruits(YEAR).catch(() => []) : [];
   const list = recruits.length ? recruits : fallback;
   const shownYear = recruits.length ? classYear : YEAR;
 
   return (
-    <div className="space-y-5">
+    <div className="page-shell space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Recruiting</h2>
-        <p className="text-sm text-white/55">Class of {shownYear}</p>
+        <p className="eyebrow">Future Trojans</p>
+        <h1 className="page-title">Recruiting</h1>
+        <p className="page-sub">Class of {shownYear}</p>
       </div>
 
       {rank ? (
-        <section className="rounded-2xl bg-cardinal p-5">
-          <p className="text-sm uppercase tracking-wide text-gold">National rank</p>
-          <p className="mt-1 text-4xl font-bold">#{rank.rank}</p>
-          <p className="mt-1 text-sm text-white/80">{rank.points.toFixed(2)} points · {rank.year}</p>
+        <section className="overflow-hidden rounded-xl bg-cardinal px-6 py-7 text-white shadow-lift">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-bright">
+            National rank
+          </p>
+          <div className="mt-2 flex flex-wrap items-end gap-4">
+            <p className="font-serif text-6xl leading-none">#{rank.rank}</p>
+            <p className="pb-1 text-sm text-white/75">
+              {rank.points.toFixed(2)} points · {rank.year} class
+            </p>
+          </div>
         </section>
       ) : null}
 
       <section>
-        <h3 className="mb-3 text-sm uppercase tracking-wide text-white/60">
-          Commits ({list.length})
-        </h3>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-faint">
+            Commits ({list.length})
+          </h3>
+        </div>
+
         {list.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/55">
-            Recruiting data will appear as the class fills out.
-          </p>
+          <p className="empty-state">Recruiting data will appear as the class fills out.</p>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-white/10">
+          <div className="card overflow-hidden">
             {list.map((r, i) => (
               <div
                 key={`${r.name}-${i}`}
-                className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-3 last:border-b-0"
+                className="flex items-start justify-between gap-4 border-b border-ink/6 px-4 py-3.5 last:border-b-0"
               >
-                <div>
-                  <p className="font-medium">{r.name}</p>
-                  <p className="text-sm text-white/55">
+                <div className="min-w-0">
+                  <p className="font-semibold text-ink">{r.name}</p>
+                  <p className="mt-0.5 text-sm text-ink-soft">
                     {r.position}
                     {r.city || r.stateProvince
                       ? ` · ${[r.city, r.stateProvince].filter(Boolean).join(", ")}`
@@ -53,12 +60,14 @@ export default async function RecruitingPage() {
                     {r.school ? ` · ${r.school}` : ""}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="shrink-0 text-right">
                   {r.stars ? (
-                    <p className="text-gold">{"★".repeat(Math.min(5, Math.round(r.stars)))}</p>
+                    <p className="text-sm tracking-tight text-gold-ink">
+                      {"★".repeat(Math.min(5, Math.round(r.stars)))}
+                    </p>
                   ) : null}
                   {r.rating ? (
-                    <p className="text-xs text-white/50">{r.rating.toFixed(4)}</p>
+                    <p className="text-xs text-ink-faint">{r.rating.toFixed(4)}</p>
                   ) : null}
                 </div>
               </div>
