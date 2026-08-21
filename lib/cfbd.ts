@@ -25,8 +25,9 @@ async function cfbd<T>(path: string, revalidate = 300): Promise<T> {
   });
 
   if (!res.ok) {
-    // Soft-fail optional endpoints so the UI still renders
-    if (res.status === 404 || res.status === 400) return [] as T;
+    if (res.status === 404 || res.status === 400 || res.status === 403) {
+      return [] as T;
+    }
     throw new Error(`CFBD ${res.status}: ${path}`);
   }
 
@@ -69,16 +70,22 @@ export async function getRecord(): Promise<TeamRecord | null> {
 }
 
 export async function getRankings(): Promise<{ ap?: number; coaches?: number }> {
-  const weeks = await cfbd<RankingWeek[]>(`/rankings?year=${YEAR}`);
-  if (!weeks.length) return {};
-  const latest = weeks[weeks.length - 1];
-  const ap = latest.polls.find((p) => p.poll === "AP Top 25");
-  const coaches = latest.polls.find(
-    (p) => p.poll === "Coaches Poll" || p.poll === "USA Today Coaches Poll"
-  );
-  const apRank = ap?.ranks.find((r) => r.school === TEAM)?.rank;
-  const coachesRank = coaches?.ranks.find((r) => r.school === TEAM)?.rank;
-  return { ap: apRank, coaches: coachesRank };
+  try {
+    const weeks = await cfbd<RankingWeek[]>(`/rankings?year=${YEAR}`);
+    if (!weeks.length) return {};
+    const latest = weeks[weeks.length - 1];
+    const find = (names: string[]) =>
+      latest.polls.find((p) => names.some((n) => p.poll.toLowerCase().includes(n)));
+    const ap = find(["ap"]);
+    const coaches = find(["coaches", "usa today"]);
+    const apRank = ap?.ranks.find((r) => r.school === TEAM || r.school.includes("Southern Cal"))?.rank;
+    const coachesRank = coaches?.ranks.find(
+      (r) => r.school === TEAM || r.school.includes("Southern Cal")
+    )?.rank;
+    return { ap: apRank, coaches: coachesRank };
+  } catch {
+    return {};
+  }
 }
 
 export async function getTeamStats(): Promise<TeamSeasonStat[]> {
@@ -96,7 +103,7 @@ export async function getPlayerSeasonStats(
 
 export async function getRecruitingTeamRank(): Promise<TeamRecruitingRank | null> {
   const ranks = await cfbd<TeamRecruitingRank[]>(`/recruiting/teams?year=${YEAR}`);
-  return ranks.find((r) => r.team === TEAM) ?? null;
+  return ranks.find((r) => r.team === TEAM || r.team.includes("Southern Cal")) ?? null;
 }
 
 export async function getRecruits(year = YEAR + 1): Promise<Recruit[]> {
@@ -125,7 +132,7 @@ export function mediaForGame(media: GameMedia[], game: Game): string | null {
       (m.week === game.week &&
         m.homeTeam === game.homeTeam &&
         m.awayTeam === game.awayTeam &&
-        (m.mediaType === "tv" || m.mediaType === "web"))
+        (m.mediaType === "tv" || m.mediaType === "web" || m.mediaType === "TV"))
   );
   return match?.outlet ?? null;
 }
