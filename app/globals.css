@@ -8,20 +8,35 @@
 
 html,
 body {
-  background: #f6f1e8;
+  background: #f4efe6;
   color: #1a1412;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
 }
 
 @layer components {
+  .page-shell {
+    @apply mx-auto max-w-5xl px-4 py-10 md:px-8;
+  }
   .eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-cardinal;
+    @apply text-[11px] font-semibold uppercase tracking-[0.2em] text-cardinal;
+  }
+  .page-title {
+    @apply mt-1 font-serif text-4xl leading-none text-ink md:text-5xl;
+  }
+  .page-sub {
+    @apply mt-2 text-sm text-ink-soft;
+  }
+  .card {
+    @apply rounded-xl border border-ink/8 bg-cream-card shadow-card;
   }
   .btn-gold {
-    @apply inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-sm font-semibold text-ink transition hover:bg-gold/90;
+    @apply inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-sm font-semibold text-ink transition hover:bg-gold-bright;
   }
   .btn-ghost {
-    @apply inline-flex items-center gap-2 rounded-md border border-white/30 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10;
+    @apply inline-flex items-center gap-2 rounded-md border border-white/35 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10;
+  }
+  .empty-state {
+    @apply card p-8 text-center text-sm text-ink-soft;
   }
 }
