@@ -139,12 +139,36 @@ export async function getTeamStats(): Promise<TeamSeasonStat[]> {
 }
 
 export async function getPlayerSeasonStats(
-  category?: string
+  category?: string,
+  year: number = YEAR
 ): Promise<PlayerSeasonStat[]> {
+  // The current season's stats update as games are played (DAILY); a past
+  // season is final and never changes again (STATIC).
+  const tier = year === YEAR ? CACHE.DAILY : CACHE.STATIC;
   const q = category
-    ? `/stats/player/season?year=${YEAR}&team=${TEAM}&category=${encodeURIComponent(category)}`
-    : `/stats/player/season?year=${YEAR}&team=${TEAM}`;
-  return cfbd<PlayerSeasonStat[]>(q, CACHE.DAILY);
+    ? `/stats/player/season?year=${year}&team=${TEAM}&category=${encodeURIComponent(category)}`
+    : `/stats/player/season?year=${year}&team=${TEAM}`;
+  const rows = await cfbd<PlayerSeasonStat[]>(q, tier);
+  // CFBD has been observed returning `stat` as a string despite the typed
+  // shape being numeric (same quirk as the roster `id` field) — coerce here
+  // so every caller gets a real number, rather than risk `+=` silently
+  // concatenating instead of adding when a consumer aggregates it.
+  return rows.map((r) => ({ ...r, stat: Number(r.stat) }));
+}
+
+// Fetches the last 5 seasons of stats and returns every row belonging to
+// this player (matched by id, falling back to full-name match since CFBD's
+// id typing has been unreliable across endpoints — see getPlayerFromRoster).
+export async function getPlayerCareerStats(
+  playerId: number,
+  playerName: string
+): Promise<PlayerSeasonStat[]> {
+  const years = Array.from({ length: 5 }, (_, i) => YEAR - i);
+  const seasons = await Promise.all(years.map((year) => getPlayerSeasonStats(undefined, year)));
+  return seasons
+    .flat()
+    .filter((s) => String(s.playerId) === String(playerId) || s.player === playerName)
+    .sort((a, b) => b.season - a.season);
 }
 
 export async function getRecruitingTeamRank(): Promise<TeamRecruitingRank | null> {
@@ -166,6 +190,43 @@ export async function getRecruits(year = YEAR + 1): Promise<Recruit[]> {
 
 export async function getCoaches(): Promise<Coach[]> {
   return cfbd<Coach[]>(`/coaches?team=${TEAM}&year=${YEAR}`, CACHE.WEEKLY);
+}
+
+// Fetches multiple recruiting classes and combines them into one list — used
+// to look up a roster player's high school, since CFBD's /roster has no such
+// field. A past class is signed and locked (STATIC); the current class can
+// still be actively updated (WEEKLY).
+export async function getRecruitsForClasses(years: number[]): Promise<Recruit[]> {
+  const lists = await Promise.all(
+    years.map((year) => {
+      const tier = year < YEAR ? CACHE.STATIC : CACHE.WEEKLY;
+      return cfbd<Recruit[]>(`/recruiting/players?year=${year}&team=${TEAM}`, tier);
+    })
+  );
+  return lists.flat();
+}
+
+function normalizeName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // strip accents (José -> jose)
+    .replace(/[^a-z0-9\s]/g, " ") // strip punctuation (periods, apostrophes, hyphens)
+    .replace(/\b(jr|sr|ii|iii|iv|v)\b/g, "") // strip generational suffixes
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Many roster players won't match — transfers, walk-ons, and juco players
+// were never in a USC recruiting class. That's expected; callers should
+// treat a null result as "no high school on file," not an error.
+export function findRecruitForPlayer(
+  recruits: Recruit[],
+  firstName: string,
+  lastName: string
+): Recruit | null {
+  const target = normalizeName(`${firstName} ${lastName}`);
+  return recruits.find((r) => normalizeName(r.name) === target) ?? null;
 }
 
 // Unfiltered so any opponent (conference or non-conference) resolves, not
