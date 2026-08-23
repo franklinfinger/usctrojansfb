@@ -178,23 +178,44 @@ body {
   }
 
   /* Trojan flourishes ----------------------------------------------------
-     trojan-horse      one-shot gallop across the bottom of the home hero
-     section-divider    sword-sweep reveal between page sections on scroll
-     nav-crest          helmet-crest flourish on nav-link hover
-     All original SVG artwork, no USC marks. Every effect is pure CSS
-     (transform/opacity only, so nothing shifts layout) and is neutralized
-     under prefers-reduced-motion below.                                   */
-  .trojan-horse {
+     tommy-peek        Tommy Trojan slides up from the bottom-right corner
+                       of the viewport, home page only, once on load
+     section-divider    sword.png with hairlines drawing outward on scroll
+     nav-link           gold underline sliding in from the left on hover
+     Every effect is pure CSS (transform/opacity only, so nothing shifts
+     layout) and is neutralized under prefers-reduced-motion below.        */
+  /* Scoped to the hero section (which is position: relative), not the
+     viewport — so Tommy scrolls away naturally with the hero instead of
+     staying pinned over whatever content happens to scroll underneath him.
+     z-index sits below the hero's own content wrapper (that's z-10), so if
+     his silhouette ever does overlap the next-game card, the card's opaque
+     background covers him rather than him floating over its text. */
+  .tommy-peek {
     position: absolute;
-    left: -160px;
-    bottom: 10px;
-    width: 160px;
-    height: auto;
-    z-index: 3;
-    color: #ffd76a;
+    right: 8px;
+    bottom: -14px;
+    height: 220px;
+    width: auto;
+    z-index: 2;
     pointer-events: none;
     opacity: 0;
-    animation: trojan-horse-run 3.6s linear 0.4s 1 both;
+    transform: translateY(48px);
+    animation: tommy-peek-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.5s 1 forwards;
+  }
+  /* Much smaller on mobile — the hero stacks tall there (headline, CTAs,
+     then the full-width next-game card below). The bottom nav (z-30) is
+     fixed to the viewport and already overlaps the last ~19px of the card
+     at this height (a pre-existing layout fact, not introduced here), so
+     there's no gap that clears both the card and the nav — Tommy is raised
+     above the nav's z-index instead (pointer-events: none keeps the nav
+     fully clickable) while staying measurably clear of the card itself. */
+  @media (max-width: 767px) {
+    .tommy-peek {
+      right: 4px;
+      bottom: -20px;
+      height: 80px;
+      z-index: 35;
+    }
   }
 
   .section-divider {
@@ -202,72 +223,75 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 12px;
     padding: 28px 0;
   }
-  .section-divider-line {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: min(280px, 65%);
+  .section-divider-hairline {
+    flex: 1 1 0;
+    max-width: 220px;
     height: 1px;
     background: currentColor;
     opacity: 0.3;
-    transform: translate(-50%, -50%) scaleX(0);
+    transform: scaleX(0);
     transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .section-divider.is-revealed .section-divider-line {
-    transform: translate(-50%, -50%) scaleX(1);
+  .section-divider-hairline-left {
+    transform-origin: right center;
   }
-  .section-divider-blade {
-    position: relative;
-    width: 44px;
-    height: auto;
+  .section-divider-hairline-right {
+    transform-origin: left center;
+  }
+  .section-divider.is-revealed .section-divider-hairline {
+    transform: scaleX(1);
+  }
+  .section-divider-sword {
+    flex-shrink: 0;
     opacity: 0;
-    transform: translateX(-28px) rotate(-10deg);
+    transform: scale(0.9);
     transition:
-      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
-      opacity 0.5s ease 0.15s;
+      opacity 0.5s ease 0.1s,
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
   }
-  .section-divider.is-revealed .section-divider-blade {
-    opacity: 0.9;
-    transform: translateX(0) rotate(0deg);
+  .section-divider.is-revealed .section-divider-sword {
+    opacity: 1;
+    transform: scale(1);
   }
 
   .nav-link {
     position: relative;
   }
-  .nav-crest {
+  .nav-link::after {
+    content: "";
     position: absolute;
-    left: 50%;
-    bottom: 100%;
-    width: 15px;
-    height: auto;
-    opacity: 0;
-    transform: translate(-50%, 4px) scale(0.7);
-    transition:
-      opacity 0.25s ease,
-      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 100%;
+    background: #f0c14b;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.25s ease;
   }
-  .nav-link:hover .nav-crest {
-    opacity: 0.85;
-    transform: translate(-50%, -3px) scale(1);
+  .nav-link:hover::after {
+    transform: scaleX(1);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .trojan-horse {
-      display: none;
+    .tommy-peek {
+      animation: none;
+      opacity: 1;
+      transform: translateY(0);
     }
-    .section-divider-line {
+    .section-divider-hairline {
       transition: none;
-      transform: translate(-50%, -50%) scaleX(1);
+      transform: scaleX(1);
     }
-    .section-divider-blade {
+    .section-divider-sword {
       transition: none;
-      opacity: 0.9;
-      transform: translateX(0) rotate(0deg);
+      opacity: 1;
+      transform: scale(1);
     }
-    .nav-crest {
+    .nav-link::after {
       transition: none;
     }
   }
@@ -283,19 +307,13 @@ body {
   }
 }
 
-@keyframes trojan-horse-run {
-  0% {
-    transform: translateX(0);
+@keyframes tommy-peek-in {
+  from {
     opacity: 0;
+    transform: translateY(48px);
   }
-  6% {
-    opacity: 0.55;
-  }
-  94% {
-    opacity: 0.55;
-  }
-  100% {
-    transform: translateX(calc(100vw + 180px));
-    opacity: 0;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

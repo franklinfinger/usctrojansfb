@@ -30,19 +30,6 @@ export default function Header() {
         <nav className="hidden items-center gap-7 text-sm font-medium text-ink/70 md:flex">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="nav-link hover:text-cardinal">
-              <svg className="nav-crest" viewBox="0 0 40 50" aria-hidden="true" focusable="false">
-                <path
-                  d="M8,46 C8,37 13,31 20,31 C27,31 32,37 32,46 L32,48 L8,48 Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M14,32 Q20,3 26,32"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="4.5"
-                  strokeLinecap="round"
-                />
-              </svg>
               {l.label}
             </Link>
           ))}

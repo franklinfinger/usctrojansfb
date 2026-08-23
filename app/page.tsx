@@ -2,7 +2,7 @@ import Link from "next/link";
 import SectionDivider from "@/components/SectionDivider";
 import SectionHeader from "@/components/SectionHeader";
 import StatGrid from "@/components/StatGrid";
-import TrojanHorseRunner from "@/components/TrojanHorseRunner";
+import TommyPeek from "@/components/TommyPeek";
 import {
   TEAM,
   findTeam,
@@ -70,7 +70,7 @@ export default async function HomePage() {
     <>
       {/* Hero — broadcast open */}
       <section className="section-dark hero-glow">
-        <TrojanHorseRunner />
+        <TommyPeek />
         <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-[1.15fr_0.85fr] md:px-8 md:py-24">
           <div>
             <p className="hero-eyebrow">USC Football · 2026 Season</p>

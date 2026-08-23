@@ -1,23 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Image as ImageIcon } from "lucide-react";
 import FightSongPlayer from "@/components/FightSongPlayer";
 import PageHero from "@/components/PageHero";
-
-function PhotoSlot({ label, onDark = false }: { label: string; onDark?: boolean }) {
-  return (
-    <div
-      role="img"
-      aria-label={`Photo placeholder: ${label}`}
-      className={`flex aspect-[16/9] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 text-center ${
-        onDark ? "border-white/25 bg-white/5 text-white/50" : "border-ink/20 bg-cream-mute text-ink-faint"
-      }`}
-    >
-      <ImageIcon className="h-6 w-6" strokeWidth={1.5} />
-      <p className="text-xs font-semibold uppercase tracking-wider">Photo placeholder</p>
-      <p className={`text-xs ${onDark ? "text-white/40" : "text-ink-faint/80"}`}>{label}</p>
-    </div>
-  );
-}
 
 export default function ColiseumPage() {
   return (
@@ -39,12 +23,19 @@ export default function ColiseumPage() {
             Trojans have never played a home game anywhere else.
           </p>
         </div>
-        <PhotoSlot label="Coliseum exterior / 1923 opening" />
+        <Image
+          src="/images/coliseum-night.jpg"
+          alt="The Coliseum lit up and packed for a night game"
+          width={960}
+          height={720}
+          className="aspect-video max-h-[500px] w-full rounded-2xl object-cover shadow-elevated"
+          sizes="(min-width: 1024px) 960px, 100vw"
+        />
       </section>
 
       {/* Olympic Stadium — dark */}
       <section className="section-dark">
-        <div className="relative z-10 mx-auto max-w-6xl space-y-6 px-4 py-14 md:px-8 md:py-20">
+        <div className="relative z-10 mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-20">
           <div>
             <p className="hero-eyebrow">Olympic Stadium</p>
             <h2 className="mt-3 font-serif text-3xl leading-tight text-white md:text-4xl">
@@ -58,12 +49,11 @@ export default function ColiseumPage() {
               Trojan home games.
             </p>
           </div>
-          <PhotoSlot label="Peristyle arches and Olympic cauldron" onDark />
         </div>
       </section>
 
       {/* More than football — cream */}
-      <section className="page-shell-wide space-y-6">
+      <section className="page-shell-wide">
         <div>
           <p className="eyebrow">More than football</p>
           <h2 className="mt-2 font-serif text-3xl text-ink md:text-4xl">
@@ -76,7 +66,6 @@ export default function ColiseumPage() {
             National Historic Landmark in 1984.
           </p>
         </div>
-        <PhotoSlot label="Historic Coliseum crowd / archival" />
       </section>
 
       {/* 2019 renovation — dark */}
@@ -93,7 +82,14 @@ export default function ColiseumPage() {
               peristyle and the historic exterior.
             </p>
           </div>
-          <PhotoSlot label="Renovated seating bowl" onDark />
+          <Image
+            src="/images/coliseum-endzone.jpg"
+            alt="The renovated Coliseum end zone and video board"
+            width={499}
+            height={400}
+            className="aspect-video max-h-[500px] w-full rounded-2xl object-cover shadow-elevated"
+            sizes="(min-width: 1024px) 1152px, 100vw"
+          />
         </div>
       </section>
 

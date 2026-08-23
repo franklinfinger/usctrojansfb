@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-// Sword-sweep divider between page sections. The blade and line are pure CSS
+// Sword divider between page sections. The hairlines and sword are pure CSS
 // transitions (see .section-divider* in globals.css); this component's only
-// job is toggling the "revealed" class once the divider scrolls into view.
+// job is toggling the "revealed" class once it scrolls into view.
 export default function SectionDivider({ tone = "light" }: { tone?: "light" | "dark" }) {
   const ref = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
@@ -30,19 +31,18 @@ export default function SectionDivider({ tone = "light" }: { tone?: "light" | "d
       ref={ref}
       aria-hidden="true"
       className={`section-divider ${revealed ? "is-revealed" : ""} ${
-        tone === "dark" ? "text-white/25" : "text-ink/25"
+        tone === "dark" ? "text-white/30" : "text-ink/25"
       }`}
     >
-      <span className="section-divider-line" />
-      <svg
-        className={`section-divider-blade ${tone === "dark" ? "text-gold-bright" : "text-gold-ink"}`}
-        viewBox="0 0 120 24"
-        fill="currentColor"
-      >
-        <rect x="4" y="9" width="7" height="7" rx="1.5" />
-        <rect x="12" y="7" width="3" height="11" rx="1" />
-        <path d="M16,9.5 L98,11 L114,12 L98,13 L16,14.5 Z" />
-      </svg>
+      <span className="section-divider-hairline section-divider-hairline-left" />
+      <Image
+        src="/images/sword.png"
+        alt=""
+        width={421}
+        height={104}
+        className="section-divider-sword h-auto w-[200px]"
+      />
+      <span className="section-divider-hairline section-divider-hairline-right" />
     </div>
   );
 }
