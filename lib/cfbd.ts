@@ -1,7 +1,10 @@
 import type {
+  BettingLine,
   Coach,
   Game,
+  GameLines,
   GameMedia,
+  HeadToHead,
   PlayerSeasonStat,
   RankingWeek,
   Recruit,
@@ -54,7 +57,12 @@ export function isApiFailure(data: unknown): boolean {
   return typeof data === "object" && data !== null && FAILED.has(data);
 }
 
-async function cfbd<T>(path: string, revalidate: number = CACHE.DAILY): Promise<T> {
+// `fallback` defaults to an empty array, which covers every list-returning
+// endpoint without callers needing to pass anything. Endpoints that return a
+// single object (e.g. /teams/matchup) must pass an object-shaped fallback —
+// an empty array cast to that type would satisfy the compiler but be wrong
+// at runtime (e.g. `.games` on `[]` is undefined, not an empty array).
+async function cfbd<T>(path: string, revalidate: number = CACHE.DAILY, fallback: T = [] as T): Promise<T> {
   const key = process.env.CFBD_API_KEY;
   if (!key) throw new Error("Missing CFBD_API_KEY");
 
@@ -66,10 +74,10 @@ async function cfbd<T>(path: string, revalidate: number = CACHE.DAILY): Promise<
   if (!res.ok) {
     if (res.status === 429) {
       console.warn(`[cfbd] rate limited (429), returning empty data: ${path}`);
-      return markFailed([] as T);
+      return markFailed(fallback);
     }
     if (res.status === 404 || res.status === 400 || res.status === 403) {
-      return [] as T;
+      return fallback;
     }
     throw new Error(`CFBD ${res.status}: ${path}`);
   }
@@ -249,6 +257,27 @@ export function findTeam(teams: Team[], school: string): Team | null {
 
 export function teamLogo(team: Team | null): string | null {
   return team?.logos?.[0] ?? null;
+}
+
+// Betting lines for a whole season, grouped per game (mirrors getMedia() +
+// mediaForGame()). A past season's lines never change (STATIC); the current
+// season's board can move right up to kickoff (LIVE).
+export async function getLines(year: number, team: string): Promise<GameLines[]> {
+  const tier = year < YEAR ? CACHE.STATIC : CACHE.LIVE;
+  return cfbd<GameLines[]>(`/lines?year=${year}&team=${encodeURIComponent(team)}`, tier);
+}
+
+export function linesForGame(lines: GameLines[], game: Game): BettingLine[] {
+  return lines.find((l) => l.id === game.id)?.lines ?? [];
+}
+
+// All-time record and game log between two teams. Fixed history, so STATIC.
+export async function getHeadToHead(team1: string, team2: string): Promise<HeadToHead> {
+  return cfbd<HeadToHead>(
+    `/teams/matchup?team1=${encodeURIComponent(team1)}&team2=${encodeURIComponent(team2)}`,
+    CACHE.STATIC,
+    { team1Wins: 0, team2Wins: 0, ties: 0, games: [] }
+  );
 }
 
 export function mediaForGame(media: GameMedia[], game: Game): string | null {

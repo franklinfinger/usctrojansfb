@@ -123,6 +123,51 @@ export type Team = {
   logos: string[] | null;
 };
 
+export type BettingLine = {
+  provider: string;
+  spread: number | null;
+  formattedSpread: string | null;
+  spreadOpen: number | null;
+  overUnder: number | null;
+  overUnderOpen: number | null;
+  homeMoneyline: number | null;
+  awayMoneyline: number | null;
+};
+
+export type GameLines = {
+  id: number;
+  season: number;
+  seasonType: string;
+  week: number;
+  startDate: string;
+  homeTeam: string;
+  awayTeam: string;
+  lines: BettingLine[];
+};
+
+export type HeadToHeadGame = {
+  season: number;
+  week: number;
+  seasonType: string;
+  date: string;
+  neutralSite: boolean;
+  venue: string | null;
+  homeTeam: string;
+  homeScore: number;
+  awayTeam: string;
+  awayScore: number;
+  winner: string | null;
+};
+
+export type HeadToHead = {
+  team1?: string;
+  team2?: string;
+  team1Wins: number;
+  team2Wins: number;
+  ties: number;
+  games: HeadToHeadGame[];
+};
+
 export type Coach = {
   firstName: string;
   lastName: string;
