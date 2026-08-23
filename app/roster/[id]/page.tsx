@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import PlayerBadge from "@/components/PlayerBadge";
 import { getPlayerFromRoster, getPlayerSeasonStats } from "@/lib/cfbd";
 import { classYear, formatHeight } from "@/lib/utils";
 
@@ -24,44 +25,55 @@ export default async function PlayerPage({
 
   return (
     <div className="page-shell space-y-6">
-      <Link href="/roster" className="text-sm font-semibold text-cardinal">
+      <Link href="/roster" className="btn-quiet">
         ← Roster
       </Link>
 
-      <section className="overflow-hidden rounded-xl bg-cardinal px-6 py-8 text-white shadow-lift">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-bright">
-          #{player.jersey ?? "—"} · {player.position ?? "—"}
-        </p>
-        <h1 className="mt-2 font-serif text-4xl md:text-5xl">
-          {player.firstName} {player.lastName}
-        </h1>
-        <p className="mt-3 text-white/85">
-          {[classYear(player.year), formatHeight(player.height), player.weight ? `${player.weight} lbs` : null]
-            .filter(Boolean)
-            .join(" · ")}
-        </p>
-        {player.hometown ? (
-          <p className="mt-1 text-sm text-white/70">
-            {player.hometown}
-            {player.homeState ? `, ${player.homeState}` : ""}
+      <section className="card-feature overflow-hidden">
+        <div className="section-dark px-6 py-8">
+          <div className="flex items-center gap-4">
+            <PlayerBadge
+              jersey={player.jersey}
+              firstName={player.firstName}
+              lastName={player.lastName}
+              size="lg"
+              onDark
+            />
+            <div>
+              <p className="hero-eyebrow">
+                #{player.jersey ?? "—"} · {player.position ?? "—"}
+              </p>
+              <h1 className="mt-1 font-serif text-4xl leading-[0.95] md:text-5xl">
+                {player.firstName} {player.lastName}
+              </h1>
+            </div>
+          </div>
+          <p className="mt-4 text-white/85">
+            {[classYear(player.year), formatHeight(player.height), player.weight ? `${player.weight} lbs` : null]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
-        ) : null}
+          {player.hometown ? (
+            <p className="mt-1 text-sm text-white/70">
+              {player.hometown}
+              {player.homeState ? `, ${player.homeState}` : ""}
+            </p>
+          ) : null}
+        </div>
       </section>
 
       <section>
-        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-faint">
-          2026 Stats
-        </h2>
+        <h2 className="mb-3 label-cap">2026 Stats</h2>
         {playerStats.length === 0 ? (
           <p className="empty-state">
             Season stats will appear after games are played.
           </p>
         ) : (
-          <div className="card overflow-hidden">
+          <div className="card-feature overflow-hidden">
             {playerStats.map((s, i) => (
               <div
                 key={`${s.category}-${s.statType}-${i}`}
-                className="flex items-center justify-between border-b border-ink/6 px-4 py-3 last:border-b-0"
+                className="row-divide flex items-center justify-between px-4 py-3"
               >
                 <span className="text-sm text-ink-soft">
                   {s.category} · {s.statType}

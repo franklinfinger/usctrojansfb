@@ -112,6 +112,17 @@ export type TeamRecruitingRank = {
   points: number;
 };
 
+export type Team = {
+  id: number;
+  school: string;
+  mascot: string | null;
+  abbreviation: string | null;
+  conference: string | null;
+  color: string | null;
+  altColor: string | null;
+  logos: string[] | null;
+};
+
 export type Coach = {
   firstName: string;
   lastName: string;

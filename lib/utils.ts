@@ -15,6 +15,16 @@ export function formatGameDate(iso: string, tbd: boolean) {
   return `${date} · ${time} PT`;
 }
 
+export function initials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+}
+
 export function formatHeight(inches: number | null | undefined) {
   if (!inches) return "—";
   const ft = Math.floor(inches / 12);

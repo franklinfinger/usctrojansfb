@@ -1,26 +1,23 @@
 import Link from "next/link";
+import SectionHeader from "@/components/SectionHeader";
+import StatGrid from "@/components/StatGrid";
 import {
+  TEAM,
+  findTeam,
   getGames,
   getMedia,
   getRankings,
   getRecord,
   getRecruitingTeamRank,
   getRoster,
+  getTeams,
   isUscHome,
   mediaForGame,
   opponentOf,
   pickNextAndLast,
+  teamLogo,
 } from "@/lib/cfbd";
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-}
+import { initials } from "@/lib/utils";
 
 function shortDate(iso: string) {
   return new Date(iso)
@@ -49,13 +46,14 @@ function daysUntil(iso: string) {
 }
 
 export default async function HomePage() {
-  const [games, record, rankings, media, recruit, roster] = await Promise.all([
+  const [games, record, rankings, media, recruit, roster, teams] = await Promise.all([
     getGames(),
     getRecord(),
     getRankings(),
     getMedia(),
     getRecruitingTeamRank().catch(() => null),
     getRoster().catch(() => []),
+    getTeams().catch(() => []),
   ]);
 
   const { next } = pickNextAndLast(games);
@@ -63,25 +61,23 @@ export default async function HomePage() {
   const opp = next ? opponentOf(next) : null;
   const home = next ? isUscHome(next) : true;
 
+  const uscLogo = teamLogo(findTeam(teams, TEAM));
+  const oppLogo = opp ? teamLogo(findTeam(teams, opp)) : null;
+
   return (
     <>
-      <section className="bg-gradient-to-br from-cardinal via-[#8a0b0b] to-cardinal-deep text-white">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 md:grid-cols-[1.15fr_0.85fr] md:px-8 md:py-16">
+      {/* Hero — broadcast open */}
+      <section className="section-dark hero-glow">
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-[1.15fr_0.85fr] md:px-8 md:py-24">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-gold-bright">
-              USC Football · 2026 Season
-            </p>
-            <h1 className="mt-4 font-serif text-[2.75rem] leading-[0.95] md:text-6xl">
-              Everything Trojan football.
-            </h1>
-            <p className="mt-3 font-serif text-[2.1rem] italic text-gold-bright md:text-5xl">
-              One command center.
-            </p>
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/80">
+            <p className="hero-eyebrow">USC Football · 2026 Season</p>
+            <h1 className="mt-5 hero-headline">Everything Trojan football.</h1>
+            <p className="mt-3 hero-subhead">One command center.</p>
+            <p className="mt-6 max-w-md text-[15px] leading-relaxed text-white/80">
               Schedules, scores, roster, stats, recruiting, and game-day intelligence built for the
               Trojan Family.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-9 flex flex-wrap gap-3">
               <Link href="/schedule" className="btn-gold">
                 View full schedule →
               </Link>
@@ -92,7 +88,7 @@ export default async function HomePage() {
           </div>
 
           {next && opp ? (
-            <article className="overflow-hidden rounded-2xl bg-cream-card text-ink shadow-lift">
+            <article className="card-feature relative overflow-hidden text-ink shadow-glow">
               <div className="flex items-center justify-between px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.16em]">
                 <span className="text-ink-soft">Next game</span>
                 <span className="rounded-full bg-gold px-2.5 py-1 text-ink">
@@ -101,8 +97,13 @@ export default async function HomePage() {
               </div>
               <div className="grid grid-cols-[1fr_auto_1fr] items-center px-5 py-6">
                 <div className="text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-gold bg-cardinal font-serif text-xl text-gold-bright">
-                    SC
+                  <div className="team-mark mx-auto h-20 w-20 border-4 border-gold md:h-24 md:w-24">
+                    {uscLogo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={uscLogo} alt="USC logo" className="h-full w-full object-contain" />
+                    ) : (
+                      <span className="font-serif text-xl text-cardinal">SC</span>
+                    )}
                   </div>
                   <p className="mt-2 text-sm font-semibold">USC</p>
                   <p className="text-[10px] uppercase tracking-wider text-ink-faint">Trojans</p>
@@ -112,8 +113,17 @@ export default async function HomePage() {
                   <p className="mt-1 text-[11px]">{shortDate(next.startDate)}</p>
                 </div>
                 <div className="text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink/10 bg-cream-mute font-serif text-lg text-ink">
-                    {initials(opp)}
+                  <div className="team-mark mx-auto h-20 w-20 border-2 border-ink/10 md:h-24 md:w-24">
+                    {oppLogo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={oppLogo}
+                        alt={`${opp} logo`}
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <span className="font-serif text-lg text-ink">{initials(opp)}</span>
+                    )}
                   </div>
                   <p className="mt-2 text-sm font-semibold uppercase">{opp}</p>
                   <p className="text-[10px] uppercase tracking-wider text-ink-faint">
@@ -139,77 +149,85 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto -mt-5 max-w-6xl px-4 md:px-8">
-        <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-ink/8 bg-cream-card shadow-lift md:grid-cols-4">
-          <StatCell
-            label="2026 Record"
-            value={record ? `${record.total.wins}-${record.total.losses}` : "0-0"}
-            hint={record ? `${record.conferenceGames.wins}-${record.conferenceGames.losses} Big Ten` : "0-0 Big Ten"}
-          />
-          <StatCell label="AP Rank" value={rankings.ap ? `#${rankings.ap}` : "—"} hint="Preseason" />
-          <StatCell
-            label="Next kickoff"
-            value={next ? shortDate(next.startDate) : "TBD"}
-            hint={opp ? `vs ${opp}` : ""}
-          />
-          <StatCell
-            label="Recruiting"
-            value={recruit ? `#${recruit.rank}` : "—"}
-            hint="2026 class"
-          />
-        </div>
+      {/* Stats — cream */}
+      <section className="page-shell-wide">
+        <StatGrid
+          items={[
+            {
+              label: "2026 Record",
+              value: record ? `${record.total.wins}-${record.total.losses}` : "0-0",
+              hint: record
+                ? `${record.conferenceGames.wins}-${record.conferenceGames.losses} Big Ten`
+                : "0-0 Big Ten",
+            },
+            { label: "AP Rank", value: rankings.ap ? `#${rankings.ap}` : "—", hint: "Preseason" },
+            {
+              label: "Next kickoff",
+              value: next ? shortDate(next.startDate) : "TBD",
+              hint: opp ? `vs ${opp}` : "",
+            },
+            {
+              label: "Recruiting",
+              value: recruit ? `#${recruit.rank}` : "—",
+              hint: "2026 class",
+            },
+          ]}
+        />
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-14 md:px-8">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <p className="eyebrow">Quick look</p>
-            <h2 className="mt-2 font-serif text-3xl md:text-4xl">Inside the program</h2>
-          </div>
-          <Link href="/roster" className="hidden text-sm font-semibold text-cardinal md:inline">
-            See everything →
-          </Link>
-        </div>
+      {/* Featured story — dark band */}
+      <section className="section-dark">
+        <Link
+          href="/news"
+          className="relative z-10 mx-auto block max-w-6xl px-4 py-10 transition hover:opacity-90 md:px-8 md:py-14"
+        >
+          <p className="hero-eyebrow">Latest</p>
+          <h2 className="mt-4 font-serif text-4xl leading-tight text-white sm:text-5xl md:text-6xl">
+            Fall camp enters its final stretch
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/75 md:text-lg">
+            Position battles, emerging leaders, and everything to watch as kickoff approaches.
+          </p>
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-gold-bright">
+            Read the briefing →
+          </p>
+        </Link>
+      </section>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Link href="/news" className="rounded-xl bg-cardinal-deep p-6 text-white shadow-card">
-            <span className="rounded-sm bg-cardinal px-2 py-1 text-[10px] font-bold uppercase tracking-wider">
-              Latest
-            </span>
-            <h3 className="mt-4 font-serif text-2xl leading-tight md:text-3xl">
-              Fall camp enters its final stretch
-            </h3>
-            <p className="mt-3 text-sm leading-relaxed text-white/75">
-              Position battles, emerging leaders, and everything to watch as kickoff approaches.
-            </p>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-gold-bright">
-              Read the briefing →
-            </p>
-          </Link>
+      {/* Program snapshot — cream */}
+      <section className="page-shell-wide">
+        <SectionHeader
+          level="h2"
+          eyebrow="Quick look"
+          title="Inside the program"
+          seeAll={{ href: "/roster", label: "See everything →" }}
+          className="mb-6"
+        />
 
-          <Link href="/roster" className="card p-6">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Link href="/roster" className="card-feature p-6 transition hover:-translate-y-0.5">
             <span className="rounded-sm bg-gold px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-ink">
               Roster
             </span>
             <h3 className="mt-4 font-serif text-2xl md:text-3xl">2026 team snapshot</h3>
             <div className="mt-5">
-              <p className="text-4xl font-semibold text-cardinal">{roster.length || "—"}</p>
-              <p className="text-[11px] uppercase tracking-wider text-ink-faint">Players</p>
+              <p className="stat-figure">{roster.length || "—"}</p>
+              <p className="label-cap mt-1">Players</p>
             </div>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft">
               Explore roster →
             </p>
           </Link>
 
-          <Link href="/recruiting" className="card p-6">
+          <Link href="/recruiting" className="card-feature p-6 transition hover:-translate-y-0.5">
             <span className="rounded-sm bg-ink px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
               Recruiting
             </span>
             <h3 className="mt-4 font-serif text-2xl md:text-3xl">2026 class</h3>
-            <p className="mt-4 font-serif text-5xl text-cardinal">
-              {recruit ? `#${recruit.rank}` : "—"}
-            </p>
-            <p className="text-[11px] uppercase tracking-wider text-ink-faint">National ranking</p>
+            <div className="mt-5">
+              <p className="stat-figure">{recruit ? `#${recruit.rank}` : "—"}</p>
+              <p className="label-cap mt-1">National ranking</p>
+            </div>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft">
               View class →
             </p>
@@ -217,25 +235,5 @@ export default async function HomePage() {
         </div>
       </section>
     </>
-  );
-}
-
-function StatCell({
-  label,
-  value,
-  hint,
-}: {
-  label: string;
-  value: string;
-  hint: string;
-}) {
-  return (
-    <div className="border-b border-ink/8 p-5 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-faint">{label}</p>
-      <div className="mt-2 flex items-end justify-between gap-2">
-        <p className="font-serif text-3xl text-cardinal md:text-4xl">{value}</p>
-        <p className="pb-1 text-right text-[11px] uppercase tracking-wider text-ink-faint">{hint}</p>
-      </div>
-    </div>
   );
 }

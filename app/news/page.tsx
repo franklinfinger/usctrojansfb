@@ -1,53 +1,43 @@
-const STORIES = [
-  {
-    title: "USC QB Jayden Maiava Named to Walter Camp Player of the Year Preseason Watch List",
-    date: "Aug 17, 2026",
-    href: "https://usctrojans.com/sports/football/archives",
-  },
-  {
-    title: "Bloom Football Performance Center Opens a New Era for USC Football",
-    date: "Aug 6, 2026",
-    href: "https://usctrojans.com/sports/football",
-  },
-  {
-    title: "USC and Notre Dame to Renew Rivalry in Four-Game Series",
-    date: "Aug 3, 2026",
-    href: "https://usctrojans.com/sports/football/archives",
-  },
-  {
-    title: "Official USC Football home",
-    date: "Ongoing",
-    href: "https://usctrojans.com/sports/football",
-  },
-];
+import PageHero from "@/components/PageHero";
+import { getNews } from "@/lib/news";
 
-export default function NewsPage() {
+function formatPubDate(iso: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+export default async function NewsPage() {
+  const news = await getNews();
+
   return (
-    <div className="page-shell space-y-6">
-      <div>
-        <p className="eyebrow">Briefing</p>
-        <h1 className="page-title">News</h1>
-        <p className="page-sub">Official USC Athletics · opens in a new tab</p>
-      </div>
+    <>
+      <PageHero eyebrow="Briefing" title="News" subtitle="Latest USC Trojans football coverage · opens in a new tab" />
+      <div className="page-shell-wide space-y-6">
+        {news.length === 0 ? (
+          <p className="empty-state">News temporarily unavailable.</p>
+        ) : (
+          <div className="card-feature overflow-hidden">
+            {news.map((item) => (
+              <a
+                key={item.link}
+                href={item.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="row-divide block px-5 py-4 hover:bg-cream"
+              >
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cardinal">
+                  {formatPubDate(item.pubDate)}
+                  {item.source ? ` · ${item.source}` : ""}
+                </p>
+                <p className="mt-1 font-medium leading-snug text-ink">{item.title}</p>
+              </a>
+            ))}
+          </div>
+        )}
 
-      <div className="card overflow-hidden">
-        {STORIES.map((s) => (
-          <a
-            key={s.title}
-            href={s.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block border-b border-ink/6 px-5 py-4 last:border-b-0 hover:bg-cream"
-          >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cardinal">
-              {s.date}
-            </p>
-            <p className="mt-1 font-medium leading-snug text-ink">{s.title}</p>
-          </a>
-        ))}
+        <p className="text-center text-xs text-ink-faint">Full coverage at usctrojans.com</p>
       </div>
-
-      <p className="text-center text-xs text-ink-faint">Full coverage at usctrojans.com</p>
-    </div>
+    </>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import PlayerBadge from "@/components/PlayerBadge";
 import type { RosterPlayer } from "@/lib/types";
 import { classYear, formatHeight } from "@/lib/utils";
 
@@ -45,7 +46,7 @@ export default function RosterList({ players }: { players: RosterPlayer[] }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search name, number, hometown"
-          className="w-full rounded-xl border border-ink/10 bg-cream-card py-3 pl-10 pr-4 text-sm outline-none placeholder:text-ink/30 focus:border-cardinal"
+          className="field"
         />
       </div>
 
@@ -55,25 +56,27 @@ export default function RosterList({ players }: { players: RosterPlayer[] }) {
             key={g}
             type="button"
             onClick={() => setGroup(g)}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold ${
-              group === g
-                ? "bg-cardinal text-white"
-                : "border border-ink/10 bg-cream-card text-ink/55"
-            }`}
+            className={group === g ? "chip-active" : "chip"}
           >
             {g}
           </button>
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-ink/8 bg-cream-card">
+      <div className="overflow-hidden card-feature">
         {filtered.map((player) => (
           <Link
             key={`${player.id}-${player.jersey}`}
             href={`/roster/${player.id}`}
-            className="flex items-center justify-between border-b border-ink/6 px-4 py-3.5 last:border-b-0 hover:bg-cream"
+            className="row-divide flex items-center gap-3 px-4 py-3.5 hover:bg-cream"
           >
-            <div className="min-w-0">
+            <PlayerBadge
+              jersey={player.jersey}
+              firstName={player.firstName}
+              lastName={player.lastName}
+              size="sm"
+            />
+            <div className="min-w-0 flex-1">
               <p className="truncate font-medium">
                 {player.firstName} {player.lastName}
               </p>
@@ -84,9 +87,6 @@ export default function RosterList({ players }: { players: RosterPlayer[] }) {
                 {player.hometown ? ` · ${player.hometown}` : ""}
               </p>
             </div>
-            <span className="ml-3 text-lg font-semibold tabular-nums text-cardinal">
-              {player.jersey ?? ""}
-            </span>
           </Link>
         ))}
         {filtered.length === 0 ? (

@@ -15,9 +15,20 @@ body {
 }
 
 @layer components {
+  /* Layout ------------------------------------------------------------ */
   .page-shell {
     @apply mx-auto max-w-5xl px-4 py-10 md:px-8;
   }
+  .page-shell-wide {
+    @apply mx-auto max-w-6xl px-4 py-10 md:px-8;
+  }
+
+  /* Type scale ---------------------------------------------------------
+     eyebrow      page-level kicker above an <h1>
+     page-title   the <h1> itself
+     page-sub     one-line description under the title
+     label-cap    small uppercase caption above a section or block of rows
+     stat-figure  large serif figure used for a headline stat value        */
   .eyebrow {
     @apply text-[11px] font-semibold uppercase tracking-[0.2em] text-cardinal;
   }
@@ -27,16 +38,152 @@ body {
   .page-sub {
     @apply mt-2 text-sm text-ink-soft;
   }
+  .label-cap {
+    @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-faint;
+  }
+  .stat-figure {
+    @apply font-serif text-5xl leading-none text-cardinal md:text-6xl;
+  }
+
+  /* Hero type scale — dramatically larger than the page type scale above,
+     used only on dark broadcast-open style sections.
+     hero-eyebrow    gold kicker on a dark section
+     hero-headline   the big serif headline
+     hero-subhead    italic serif accent line under the headline            */
+  .hero-eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-bright;
+  }
+  .hero-headline {
+    @apply font-serif text-5xl leading-[0.95] text-white sm:text-6xl md:text-7xl lg:text-8xl;
+  }
+  .hero-subhead {
+    @apply font-serif text-3xl italic leading-tight text-gold-bright sm:text-4xl md:text-5xl;
+  }
+  /* Dark-section page header — the h1 + intro line used by PageHero on every
+     inner page. Smaller than .hero-headline (that stays home-page-only) but
+     still a clear step up from .page-title. */
+  .page-hero-title {
+    @apply mt-4 font-serif text-4xl leading-[0.95] text-white sm:text-5xl md:text-6xl;
+  }
+  .page-hero-sub {
+    @apply mt-3 max-w-xl text-[15px] leading-relaxed text-white/75;
+  }
+
+  /* Surfaces -------------------------------------------------------------
+     card         raised default surface (border + shadow)
+     card-flat    same surface without the shadow
+     card-inset   recessed surface (page-color fill) used inside a card
+     row-divide   hairline divider between stacked rows inside a card       */
   .card {
     @apply rounded-xl border border-ink/8 bg-cream-card shadow-card;
   }
+  .card-flat {
+    @apply rounded-xl border border-ink/8 bg-cream-card;
+  }
+  .card-inset {
+    @apply rounded-xl border border-ink/8 bg-cream;
+  }
+  .row-divide {
+    @apply border-b border-ink/6 last:border-b-0;
+  }
+  /* Elevated standalone feature card (vs. the flatter default .card) —
+     heavier shadow, more visible hairline border. Pair with the `shadow-glow`
+     utility instead when the card floats on a dark section. */
+  .card-feature {
+    @apply rounded-2xl border border-ink/20 bg-cream-card shadow-elevated;
+  }
+  /* Circular frame for a team logo — neutral white disc so any team's mark
+     reads clearly regardless of that team's own colors. */
+  .team-mark {
+    @apply relative flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white p-3 shadow-elevated;
+  }
+
+  /* Dark sections ---------------------------------------------------------
+     section-dark   full-bleed dark band (gradient + subtle line texture)
+     hero-glow      one CSS-only motion accent, for the hero only
+     Gradient is a plain CSS background-image (not @apply'd Tailwind color
+     utilities) so it can use precise percentage stops: mostly near-black
+     ink, with cardinal only as a hint at the top edge — a full cardinal ->
+     ink linear sweep blends into a muddy brown in the middle, which this
+     avoids by pushing the cardinal stop to fade out early.               */
+  .section-dark {
+    @apply relative overflow-hidden text-white;
+    background-image: linear-gradient(to bottom, #6e0000 0%, #1a1412 45%, #1a1412 100%);
+  }
+  .section-dark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.035) 0px,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 14px
+    );
+  }
+  .hero-glow::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle at 50% 15%, rgba(240, 193, 75, 0.18), transparent 60%);
+    animation: hero-glow-pulse 7s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-glow::after {
+      animation: none;
+      opacity: 0.85;
+    }
+  }
+
+  /* Controls ---------------------------------------------------------
+     btn-gold     primary action (on dark/color backgrounds)
+     btn-ghost    secondary action (on dark/color backgrounds)
+     btn-quiet    tertiary inline text action (on light surfaces)
+     chip / chip-active   filter pill, inactive and active states
+     field        text input                                              */
   .btn-gold {
     @apply inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-sm font-semibold text-ink transition hover:bg-gold-bright;
   }
   .btn-ghost {
     @apply inline-flex items-center gap-2 rounded-md border border-white/35 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10;
   }
+  .btn-quiet {
+    @apply text-sm font-semibold text-cardinal;
+  }
+  .chip {
+    @apply shrink-0 rounded-full border border-ink/10 bg-cream-card px-3.5 py-1.5 text-xs font-semibold text-ink/55;
+  }
+  .chip-active {
+    @apply shrink-0 rounded-full bg-cardinal px-3.5 py-1.5 text-xs font-semibold text-white;
+  }
+  .field {
+    @apply w-full rounded-xl border border-ink/10 bg-cream-card py-3 pl-10 pr-4 text-sm outline-none placeholder:text-ink/30 focus:border-cardinal;
+  }
+
+  /* Data display -------------------------------------------------------
+     table-head   compact uppercase caption above a single value/column
+     table-cell   the value paired with a table-head caption
+     empty-state  placeholder shown when a section has no data             */
+  .table-head {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-faint;
+  }
+  .table-cell {
+    @apply text-sm font-medium text-ink;
+  }
   .empty-state {
     @apply card p-8 text-center text-sm text-ink-soft;
+  }
+}
+
+@keyframes hero-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
   }
 }
