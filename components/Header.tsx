@@ -7,6 +7,7 @@ const links = [
   { href: "/recruiting", label: "Recruiting" },
   { href: "/team", label: "Team" },
   { href: "/coliseum", label: "Coliseum" },
+  { href: "/news", label: "News" },
 ];
 
 export default function Header() {
