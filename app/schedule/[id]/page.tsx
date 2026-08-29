@@ -17,6 +17,7 @@ import {
   opponentOf,
   teamLogo,
 } from "@/lib/cfbd";
+import { getLiveGameData, quarterLabel } from "@/lib/espn";
 import { formatGameDate, initials } from "@/lib/utils";
 import { formatWeather, weatherForGame } from "@/lib/weather";
 
@@ -54,6 +55,14 @@ export default async function GamePage({
   const oppScore = home ? game.awayPoints : game.homePoints;
   const played = game.completed && uscScore != null && oppScore != null;
   const won = played && (uscScore as number) > (oppScore as number);
+
+  // Only reach for ESPN's live/summary data once there's something to show —
+  // a game that hasn't kicked off yet gets the existing pregame view
+  // untouched, with no ESPN calls at all.
+  const kickoffPassed = new Date(game.startDate).getTime() <= Date.now();
+  const live =
+    !game.startTimeTbd && (kickoffPassed || game.completed) ? await getLiveGameData(game) : null;
+  const isLive = live?.state === "in";
 
   const [lines, headToHead] = await Promise.all([
     getLines(game.season, TEAM).catch(() => []),
@@ -108,7 +117,33 @@ export default async function GamePage({
             {weather ? <span>· {formatWeather(weather)}</span> : null}
           </div>
 
-          {played ? (
+          {isLive && live ? (
+            <div className="mt-8">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gold">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold" />
+                Live · {quarterLabel(live.period)} · {live.clock}
+              </p>
+              <div className="mt-3 space-y-2">
+                {[live.away, live.home].map((team) => (
+                  <div key={team.school} className="flex items-center justify-between gap-3">
+                    <span className="flex items-center gap-2 font-serif text-2xl text-white">
+                      {team.possession ? (
+                        <span className="h-2 w-2 rounded-full bg-gold" aria-label="Possession" />
+                      ) : null}
+                      {team.school}
+                    </span>
+                    <span className="font-serif text-3xl text-white">{team.score ?? "–"}</span>
+                  </div>
+                ))}
+              </div>
+              {live.downDistanceText ? (
+                <p className="mt-3 text-sm text-white/70">
+                  {live.downDistanceText}
+                  {live.isRedZone ? " · Red zone" : ""}
+                </p>
+              ) : null}
+            </div>
+          ) : played ? (
             <div className="mt-8">
               <p className="font-serif text-5xl">
                 {won ? "W" : "L"} {uscScore}-{oppScore}
@@ -118,13 +153,43 @@ export default async function GamePage({
           ) : null}
         </div>
 
-        {!played && !game.startTimeTbd ? (
+        {!played && !isLive && !game.startTimeTbd ? (
           <div className="border-t border-ink/8 px-6 py-6">
             <p className="mb-3 label-cap">Countdown to kickoff</p>
             <Countdown targetIso={game.startDate} />
           </div>
         ) : null}
       </section>
+
+      {live?.boxscore ? (
+        <section>
+          <h2 className="mb-3 label-cap">Team Stats</h2>
+          <div className="card-feature overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-ink/10">
+                    <th className="table-head px-4 py-3 text-left">{live.away.school}</th>
+                    <th className="table-head px-4 py-3 text-center" />
+                    <th className="table-head px-4 py-3 text-right">{live.home.school}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {live.boxscore.map((stat) => (
+                    <tr key={stat.label} className="row-divide">
+                      <td className="table-cell px-4 py-2.5">{stat.away}</td>
+                      <td className="table-cell px-4 py-2.5 text-center text-xs uppercase tracking-wide text-ink-faint">
+                        {stat.label}
+                      </td>
+                      <td className="table-cell px-4 py-2.5 text-right">{stat.home}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid gap-3 sm:grid-cols-3">
         <Meta label="Season type" value={game.seasonType} />
