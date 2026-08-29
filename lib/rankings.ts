@@ -76,3 +76,14 @@ export function buildPollTabs(weeks: RankingWeek[]): PollTab[] {
     buildTab(weeks, "cfp", "CFP Rankings", (p) => p.includes("playoff")),
   ];
 }
+
+// The set of currently-ranked schools, lowercased/trimmed for loose matching
+// against other data sources (e.g. ESPN's scoreboard, which names teams
+// slightly differently in places). Prefers AP since it's the most widely
+// referenced poll; falls back to whichever poll is actually live (Coaches,
+// then CFP once it starts publishing) so this still works before AP has run
+// or in the unlikely case AP data alone fails to come back.
+export function top25Schools(polls: PollTab[]): Set<string> {
+  const rows = polls.find((p) => p.key === "ap")?.rows ?? polls.find((p) => p.rows)?.rows ?? [];
+  return new Set(rows.map((r) => r.school.toLowerCase().trim()));
+}

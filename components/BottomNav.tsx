@@ -13,6 +13,7 @@ const primaryLinks = [
 ];
 
 const moreLinks = [
+  { href: "/scoreboard", label: "Scoreboard" },
   { href: "/rankings", label: "Rankings" },
   { href: "/conference", label: "Conference" },
   { href: "/recruiting", label: "Recruiting" },
