@@ -53,7 +53,7 @@ export default async function ScoreboardPage() {
         {sorted.length === 0 ? (
           <p className="empty-state">No relevant games right now — check back closer to kickoff.</p>
         ) : (
-          <div className="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {sorted.map((game) => (
               <ScoreboardCard key={game.id} game={game} ranks={ranks} />
             ))}
