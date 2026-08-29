@@ -132,14 +132,32 @@ export async function getRankings(): Promise<{ ap?: number; coaches?: number }> 
       latest.polls.find((p) => names.some((n) => p.poll.toLowerCase().includes(n)));
     const ap = find(["ap"]);
     const coaches = find(["coaches", "usa today"]);
-    const apRank = ap?.ranks.find((r) => r.school === TEAM || r.school.includes("Southern Cal"))?.rank;
-    const coachesRank = coaches?.ranks.find(
-      (r) => r.school === TEAM || r.school.includes("Southern Cal")
-    )?.rank;
+    const apRank = ap?.ranks.find((r) => isUscSchool(r.school))?.rank;
+    const coachesRank = coaches?.ranks.find((r) => isUscSchool(r.school))?.rank;
     return { ap: apRank, coaches: coachesRank };
   } catch {
     return {};
   }
+}
+
+// Every ranking week published this season, in CFBD's natural (ascending
+// week) order. Unlike getRankings() above — which only pulls out USC's
+// AP/Coaches numbers for the home page stat cards — this is the raw feed a
+// full rankings page needs: every poll, every school, for the latest week
+// and whatever week came before it (for week-over-week movement).
+export async function getAllRankings(): Promise<RankingWeek[]> {
+  return cfbd<RankingWeek[]>(`/rankings?year=${YEAR}`, CACHE.DAILY);
+}
+
+// Full standings for one conference, one row per team. CFBD's /records
+// `conference` filter wants the conference's short abbreviation, not its
+// display name — "Big Ten" itself returns zero rows; USC's is "B1G"
+// (confirmed against /conferences). Used for the conference standings page.
+export async function getConferenceStandings(conference: string): Promise<TeamRecord[]> {
+  return cfbd<TeamRecord[]>(
+    `/records?year=${YEAR}&conference=${encodeURIComponent(conference)}`,
+    CACHE.DAILY
+  );
 }
 
 export async function getTeamStats(): Promise<TeamSeasonStat[]> {
@@ -249,6 +267,15 @@ export function isUscHome(game: Game) {
 
 export function opponentOf(game: Game) {
   return isUscHome(game) ? game.awayTeam : game.homeTeam;
+}
+
+// USC's poll rows have been observed using "Southern Cal" instead of "USC"
+// in some CFBD poll data — this covers both spellings anywhere a caller
+// needs to identify USC's row. The /records endpoint's `team` field doesn't
+// have this ambiguity (it's reliably "USC" there), so conference standings
+// don't need this — only polls do.
+export function isUscSchool(school: string): boolean {
+  return school === TEAM || school.includes("Southern Cal");
 }
 
 export function findTeam(teams: Team[], school: string): Team | null {

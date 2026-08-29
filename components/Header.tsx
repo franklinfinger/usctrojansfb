@@ -4,6 +4,8 @@ const links = [
   { href: "/schedule", label: "Schedule" },
   { href: "/roster", label: "Roster" },
   { href: "/stats", label: "Stats" },
+  { href: "/rankings", label: "Rankings" },
+  { href: "/conference", label: "Conference" },
   { href: "/recruiting", label: "Recruiting" },
   { href: "/team", label: "Team" },
   { href: "/coliseum", label: "Coliseum" },
