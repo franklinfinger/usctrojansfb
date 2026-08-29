@@ -1,17 +1,20 @@
 import Link from "next/link";
-import { MapPin, Tv } from "lucide-react";
+import { CloudSun, MapPin, Tv } from "lucide-react";
 import { isUscHome, opponentOf } from "@/lib/cfbd";
 import type { Game } from "@/lib/types";
 import { formatGameDate, initials } from "@/lib/utils";
+import { formatWeather, type KickoffWeather } from "@/lib/weather";
 
 export default function GameCard({
   game,
   tv,
   logo,
+  weather,
 }: {
   game: Game;
   tv?: string | null;
   logo?: string | null;
+  weather?: KickoffWeather | null;
   compact?: boolean;
 }) {
   const home = isUscHome(game);
@@ -53,6 +56,11 @@ export default function GameCard({
               {tv ? (
                 <p className="mt-1 flex items-center gap-1.5 text-sm text-ink/70">
                   <Tv size={14} /> {tv}
+                </p>
+              ) : null}
+              {weather ? (
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-ink/70">
+                  <CloudSun size={14} /> {formatWeather(weather)}
                 </p>
               ) : null}
             </div>

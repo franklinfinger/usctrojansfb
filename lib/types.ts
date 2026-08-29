@@ -123,6 +123,16 @@ export type Team = {
   logos: string[] | null;
 };
 
+export type Venue = {
+  id: number;
+  name: string;
+  city: string | null;
+  state: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  dome: boolean | null;
+};
+
 export type BettingLine = {
   provider: string;
   spread: number | null;

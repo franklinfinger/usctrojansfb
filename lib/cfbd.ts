@@ -13,6 +13,7 @@ import type {
   TeamRecord,
   TeamRecruitingRank,
   TeamSeasonStat,
+  Venue,
 } from "./types";
 
 const BASE = "https://api.collegefootballdata.com";
@@ -259,6 +260,18 @@ export function findRecruitForPlayer(
 // just Big Ten teams.
 export async function getTeams(): Promise<Team[]> {
   return cfbd<Team[]>(`/teams`, CACHE.WEEKLY);
+}
+
+// Every FBS venue with its lat/lon — used to look up a game's kickoff
+// weather from its venue name (see lib/weather.ts). Venues essentially
+// never move, hence the WEEKLY tier.
+export async function getVenues(): Promise<Venue[]> {
+  return cfbd<Venue[]>(`/venues`, CACHE.WEEKLY);
+}
+
+export function findVenue(venues: Venue[], name: string | null): Venue | null {
+  if (!name) return null;
+  return venues.find((v) => v.name === name) ?? null;
 }
 
 export function isUscHome(game: Game) {

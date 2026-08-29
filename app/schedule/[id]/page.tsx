@@ -10,6 +10,7 @@ import {
   getLines,
   getMedia,
   getTeams,
+  getVenues,
   isUscHome,
   linesForGame,
   mediaForGame,
@@ -17,6 +18,7 @@ import {
   teamLogo,
 } from "@/lib/cfbd";
 import { formatGameDate, initials } from "@/lib/utils";
+import { formatWeather, weatherForGame } from "@/lib/weather";
 
 function shortMeetingDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -35,10 +37,11 @@ export default async function GamePage({
   const gameId = Number(id);
   if (!Number.isFinite(gameId)) notFound();
 
-  const [game, media, teams] = await Promise.all([
+  const [game, media, teams, venues] = await Promise.all([
     getGame(gameId),
     getMedia(),
     getTeams().catch(() => []),
+    getVenues().catch(() => []),
   ]);
   if (!game) notFound();
 
@@ -46,6 +49,7 @@ export default async function GamePage({
   const opponent = opponentOf(game);
   const opponentLogo = teamLogo(findTeam(teams, opponent));
   const tv = mediaForGame(media, game);
+  const weather = await weatherForGame(game, venues);
   const uscScore = home ? game.homePoints : game.awayPoints;
   const oppScore = home ? game.awayPoints : game.homePoints;
   const played = game.completed && uscScore != null && oppScore != null;
@@ -101,6 +105,7 @@ export default async function GamePage({
           <div className="mt-2 flex flex-wrap gap-3 text-sm text-white/70">
             {game.venue ? <span>{game.venue}</span> : null}
             {tv ? <span>· TV: {tv}</span> : null}
+            {weather ? <span>· {formatWeather(weather)}</span> : null}
           </div>
 
           {played ? (
