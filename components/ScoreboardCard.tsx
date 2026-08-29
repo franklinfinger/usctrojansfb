@@ -2,7 +2,7 @@ import { Tv } from "lucide-react";
 import { quarterLabel, type ScoreboardGame, type ScoreboardTeam } from "@/lib/espn";
 import { formatGameDate } from "@/lib/utils";
 
-function TeamRow({ team }: { team: ScoreboardTeam }) {
+function TeamRow({ team, rank }: { team: ScoreboardTeam; rank: number | null }) {
   const isUsc = team.abbreviation === "USC";
   return (
     <div className="flex items-center gap-3">
@@ -14,8 +14,15 @@ function TeamRow({ team }: { team: ScoreboardTeam }) {
           <span className="font-serif text-[10px] text-ink">{team.abbreviation}</span>
         )}
       </div>
-      <span className={`truncate text-sm font-medium ${isUsc ? "text-cardinal" : "text-ink"}`}>
-        {team.school}
+      <span className="flex min-w-0 items-center gap-1.5">
+        {rank != null ? (
+          <span className="shrink-0 rounded bg-cardinal/10 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-cardinal">
+            #{rank}
+          </span>
+        ) : null}
+        <span className={`truncate text-sm font-medium ${isUsc ? "text-cardinal" : "text-ink"}`}>
+          {team.school}
+        </span>
       </span>
       {team.score != null ? (
         <span className={`ml-auto text-lg font-semibold tabular-nums ${isUsc ? "text-cardinal" : "text-ink"}`}>
@@ -26,8 +33,15 @@ function TeamRow({ team }: { team: ScoreboardTeam }) {
   );
 }
 
-export default function ScoreboardCard({ game }: { game: ScoreboardGame }) {
+export default function ScoreboardCard({
+  game,
+  ranks,
+}: {
+  game: ScoreboardGame;
+  ranks: Map<string, number>;
+}) {
   const isUsc = game.home.abbreviation === "USC" || game.away.abbreviation === "USC";
+  const rankOf = (team: ScoreboardTeam) => ranks.get(team.school.toLowerCase().trim()) ?? null;
   const eyebrow = game.state === "in" ? "Live" : game.state === "post" ? game.statusDetail || "Final" : "Upcoming";
   const meta =
     game.state === "in"
@@ -44,8 +58,8 @@ export default function ScoreboardCard({ game }: { game: ScoreboardGame }) {
         <p className="text-xs font-medium text-ink/55">{meta}</p>
       </div>
       <div className="mt-3 space-y-2">
-        <TeamRow team={game.away} />
-        <TeamRow team={game.home} />
+        <TeamRow team={game.away} rank={rankOf(game.away)} />
+        <TeamRow team={game.home} rank={rankOf(game.home)} />
       </div>
       {game.state === "pre" && game.broadcast ? (
         <p className="mt-3 flex items-center gap-1.5 text-sm text-ink/70">

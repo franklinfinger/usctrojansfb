@@ -77,13 +77,24 @@ export function buildPollTabs(weeks: RankingWeek[]): PollTab[] {
   ];
 }
 
+// Prefers AP since it's the most widely referenced poll; falls back to
+// whichever poll is actually live (Coaches, then CFP once it starts
+// publishing) so callers still work before AP has run this week or in the
+// unlikely case AP data alone fails to come back.
+function currentTop25Rows(polls: PollTab[]): RankRow[] {
+  return polls.find((p) => p.key === "ap")?.rows ?? polls.find((p) => p.rows)?.rows ?? [];
+}
+
 // The set of currently-ranked schools, lowercased/trimmed for loose matching
 // against other data sources (e.g. ESPN's scoreboard, which names teams
-// slightly differently in places). Prefers AP since it's the most widely
-// referenced poll; falls back to whichever poll is actually live (Coaches,
-// then CFP once it starts publishing) so this still works before AP has run
-// or in the unlikely case AP data alone fails to come back.
+// slightly differently in places).
 export function top25Schools(polls: PollTab[]): Set<string> {
-  const rows = polls.find((p) => p.key === "ap")?.rows ?? polls.find((p) => p.rows)?.rows ?? [];
-  return new Set(rows.map((r) => r.school.toLowerCase().trim()));
+  return new Set(currentTop25Rows(polls).map((r) => r.school.toLowerCase().trim()));
+}
+
+// School (lowercased/trimmed) -> current AP rank. Same row source as
+// top25Schools, so a caller already filtering by top25Schools can look up a
+// team's rank for display without a second rankings fetch.
+export function top25Ranks(polls: PollTab[]): Map<string, number> {
+  return new Map(currentTop25Rows(polls).map((r) => [r.school.toLowerCase().trim(), r.rank]));
 }

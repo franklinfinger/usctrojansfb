@@ -2,7 +2,7 @@ import PageHero from "@/components/PageHero";
 import ScoreboardCard from "@/components/ScoreboardCard";
 import { getAllRankings, getTeams } from "@/lib/cfbd";
 import { getScoreboard } from "@/lib/espn";
-import { buildPollTabs, top25Schools } from "@/lib/rankings";
+import { buildPollTabs, top25Ranks, top25Schools } from "@/lib/rankings";
 
 const CONFERENCE = "Big Ten";
 
@@ -15,7 +15,9 @@ export default async function ScoreboardPage() {
     getTeams().catch(() => []),
   ]);
 
-  const top25 = top25Schools(buildPollTabs(weeks));
+  const polls = buildPollTabs(weeks);
+  const top25 = top25Schools(polls);
+  const ranks = top25Ranks(polls);
   const conferenceSchools = new Set(
     teams.filter((t) => t.conference === CONFERENCE).map((t) => t.school.toLowerCase().trim())
   );
@@ -53,7 +55,7 @@ export default async function ScoreboardPage() {
         ) : (
           <div className="space-y-3">
             {sorted.map((game) => (
-              <ScoreboardCard key={game.id} game={game} />
+              <ScoreboardCard key={game.id} game={game} ranks={ranks} />
             ))}
           </div>
         )}
